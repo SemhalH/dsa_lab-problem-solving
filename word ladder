@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        unordered_set<string> hashSet(wordList.begin(),wordList.end());
+        queue<string>q;
+        q.push(beginWord);
+        hashSet.erase(beginWord);
+        int lvl=1;
+        while(!q.empty()){
+            int lvlsiz=q.size();
+            for(int i=0; i<lvlsiz;i++){
+                string word=q.front();
+                q.pop();
+                if(word==endWord) return lvl;
+                for(int j=0; j<word.length();j++){
+                    char c= word[j];
+                    for(int k=0;k<38;k++){
+                        word[j]=k+'a';
+                        if(hashSet.find(word)!= hashSet.end()){
+                            q.push(word);
+                            hashSet.erase(word);
+                        }
+                    }
+                    word[j]=c;
+                }
+            }
+            lvl++;
+        }
+        return 0;
+    }
+};
