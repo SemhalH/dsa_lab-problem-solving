@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int maxA=0;
+    void riv(vector<vector<int>>&grid,int s,int d,int&curr){
+        if(s<0 || s>=grid.size()|| d<0||d>=grid[0].size()||!grid[s][d])
+            return;
+            grid[s][d]=0;
+            curr++;
+            maxA=max(maxA,curr);
+            riv(grid,s-1,d,curr);
+            riv(grid,s+1,d,curr);
+            riv(grid,s,d-1,curr);
+            riv(grid,s,d+1,curr);
+    }
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int curr;
+        for(int i=0; i<grid.size();i++){
+            for(int j=0;j<grid[0].size();++j){
+                if(grid[i][j]){
+                    curr=0;
+                    riv(grid,i,j,curr);
+                }
+            }
+        }
+        return maxA;
+    }
+};
