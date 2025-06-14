@@ -1,0 +1,61 @@
+class Solution {
+public:
+    
+    int dr_moves[4] = {-1, 1, 0, 0}; 
+    int dc_moves[4] = {0, 0, -1, 1}; 
+    int f(vector<vector<char>>& maze, vector<int>& ent,
+          int i, int j, int n, int m,
+          vector<vector<vector<int>>>& dp, int dir) {
+
+        if ((i == 0 || i == n - 1 || j == 0 || j == m - 1) && (i != ent[0] || j != ent[1])) {
+            return 0;
+        }
+
+        
+        if (dir != -1 && dp[i][j][dir] != -1) {
+            return dp[i][j][dir];
+        }
+
+        int min_steps = 1e5;
+        for (int ind = 0; ind < 4; ind++) {
+            int nr = i + dr_moves[ind];
+            int nc = j + dc_moves[ind];
+
+            if (nr >= 0 && nc >= 0 && nr < n && nc < m && maze[nr][nc] == '.') {
+                
+                maze[nr][nc] = '+';
+
+                int steps_from_neighbor;
+                
+                steps_from_neighbor = f(maze, ent, nr, nc, n, m, dp, ind);
+                
+                if (steps_from_neighbor != 1e5) {
+                    min_steps = min(min_steps, 1 + steps_from_neighbor);
+                }
+
+                maze[nr][nc] = '.';
+            }
+        }
+        
+        if (dir != -1) {
+            return dp[i][j][dir] = min_steps;
+        } else {
+            return min_steps;
+        }
+    }
+
+    int nearestExit(vector<vector<char>>& maze, vector<int>& entrance) {
+        int n = maze.size();
+        int m = maze[0].size();
+
+        
+        vector<vector<vector<int>>> dp(n,vector<vector<int>>(m,vector<int>(4, -1))); 
+        maze[entrance[0]][entrance[1]] = '+';
+
+        int ans = f(maze, entrance, entrance[0], entrance[1], n, m, dp, -1); 
+        maze[entrance[0]][entrance[1]] = '.';
+
+        return ans == 1e5 ? -1 : ans;
+    }
+};
+
