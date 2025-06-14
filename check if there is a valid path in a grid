@@ -1,0 +1,65 @@
+class Solution {
+public:
+    bool hasValidPath(vector<vector<int>>& grid) {
+        int m = grid.size();
+        if (m == 0) return false; 
+        int n = grid[0].size();
+        if (n == 0) return false;
+        vector<vector<pair<int, int>>> connections(7); 
+        connections[1] = {{0, -1}, {0, 1}}; 
+        connections[2] = {{-1, 0}, {1, 0}};
+        connections[3] = {{0, -1}, {1, 0}}; 
+        connections[4] = {{0, 1}, {1, 0}};  
+        connections[5] = {{0, -1}, {-1, 0}}; 
+        connections[6] = {{0, 1}, {-1, 0}}; 
+        map<pair<int, int>, pair<int, int>> opposite_direction;
+        opposite_direction[{0, 1}] = {0, -1};
+        opposite_direction[{0, -1}] = {0, 1};
+        opposite_direction[{1, 0}] = {-1, 0};
+        opposite_direction[{-1, 0}] = {1, 0}; 
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        visited[0][0] = true;
+        while (!q.empty()) {
+           pair<int, int> current = q.front();
+            q.pop();
+            int r = current.first;
+            int c = current.second;
+            if (r == m - 1 && c == n - 1) {
+                return true;
+            }
+
+            int current_street_type = grid[r][c];
+            for (const auto& dir_pair : connections[current_street_type]) {
+                int dr_move = dir_pair.first;
+                int dc_move = dir_pair.second;
+
+                int nr = r + dr_move; 
+                int nc = c + dc_move; 
+                if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                    continue;
+                }
+                if (visited[nr][nc]) {
+                    continue;
+                }
+
+                int neighbor_street_type = grid[nr][nc];
+               pair<int, int> required_back_direction = opposite_direction[{dr_move, dc_move}];
+
+                bool can_neighbor_connect_back = false;
+                for (const auto& neighbor_dir_pair : connections[neighbor_street_type]) {
+                    if (neighbor_dir_pair == required_back_direction) {
+                        can_neighbor_connect_back = true;
+                        break;
+                    }
+                }
+                if (can_neighbor_connect_back) {
+                    visited[nr][nc] = true;
+                    q.push({nr, nc});
+                }
+            }
+        }
+        return false;
+    }
+};
