@@ -1,0 +1,75 @@
+class Solution {
+private:
+    bool isOdd(int n){
+        return (n & 1) == 1;
+    }
+    pair<int, int> conv1(int n, int val) {
+        int r_from_bottom = (val - 1) / n;
+        int col_flat = (val - 1) % n;
+        int board_row = n - 1 - r_from_bottom;
+        int board_col;
+        if (r_from_bottom % 2 == 0) { 
+            board_col = col_flat;
+        } else { 
+            board_col = n - 1 - col_flat;
+        }
+
+        return {board_row, board_col};
+    }
+
+    int conv2(int n, int row, int col) {
+        int r_from_bottom = n - 1 - row;
+        int flat_col;
+
+        if (r_from_bottom % 2 == 0) { 
+            flat_col = col;
+        } else {
+            flat_col = n - 1 - col;
+        }
+        return n * r_from_bottom + flat_col + 1;
+    }
+
+public:
+    int snakesAndLadders(vector<vector<int>>& board) {
+        int n = board.size();
+        int finalv = n * n;
+        vector<int> visited(finalv + 1, 0);
+
+        queue<pair<int, int>> q;
+
+        q.push({0, 1});
+        visited[1] = 1;
+
+        while (!q.empty()) {
+            int depth = q.front().first; 
+            int val = q.front().second; 
+            q.pop();
+            if (val == finalv) {
+                return depth;
+            }
+            for (int i = 1; i <= 6; i++) {
+                int nextval = val + i;
+
+                if (nextval > finalv) {
+                    break;
+                }
+
+                pair<int, int> location = conv1(n, nextval);
+                int row = location.first;
+                int col = location.second;
+
+                
+                if (board[row][col] != -1) {
+                    nextval = board[row][col]; 
+                }
+
+                if (visited[nextval] == 0) {
+                    visited[nextval] = 1; 
+                    q.push({depth + 1, nextval});
+                }
+            }
+        }
+
+        return -1;
+    }
+};
