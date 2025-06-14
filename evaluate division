@@ -1,0 +1,63 @@
+class Solution {
+public:
+    vector<double> calcEquation(vector<vector<string>>& equations,
+                                     vector<double>& values,
+                                     vector<vector<string>>& queries) {
+        unordered_map<string,unordered_map<string, double>> graph;
+
+        for (int i = 0; i < equations.size(); ++i) {
+            const string& var1 = equations[i][0];
+            const string& var2 = equations[i][1];
+            double val = values[i];
+            graph[var1][var2] = val;
+            graph[var2][var1] = 1.0 / val;
+            graph[var1][var1] = 1.0;
+            graph[var2][var2] = 1.0;
+        }
+        vector<double> results;
+        for (const auto& query : queries) {
+            const string& start_v = query[0];
+            const string& end_v = query[1];
+            if (graph.find(start_v) == graph.end() || graph.find(end_v) == graph.end()) {
+                results.push_back(-1.0);
+                continue; 
+            }
+            if (start_v == end_v) {
+                results.push_back(1.0);
+                continue;
+            }
+            unordered_set<string> visited;
+            double ans = -1.0;
+            dfs(start_v, end_v, graph, visited, 1.0, ans);  
+            results.push_back(ans);
+        }
+
+        return results;
+    }
+
+private:
+    void dfs(const string& curr_v,
+             const string& target_v,
+             const unordered_map<string, unordered_map<string, double>>& graph,
+             unordered_set<string>& visited,
+             double curr_p,
+             double& result) {
+        visited.insert(curr_v);
+        if (curr_v == target_v) {
+            result = curr_p;
+            return;
+        }
+        for (const auto& neig_p : graph.at(curr_v)) {
+            const string& neig_v = neig_p.first;
+            double div_v = neig_p.second;
+            if (visited.find(neig_v) == visited.end()) {
+                dfs(neig_v, target_v, graph, visited, curr_p * div_v, result);
+
+                if (result != -1.0) { 
+                    return;
+                }
+            }
+        }
+        visited.erase(curr_v);
+    }
+};
