@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int racecar(int target) {
+        static vector<int>ms(10001,-1);
+        if(ms[target]>=0) return ms[target];
+        int as= floor(log2(target))+1;
+        if((1<<as)-1==target)
+            ms[target]=as;
+        else{
+            ms[target]=as+1+racecar((1<<as)-1-target);
+            for(int i=0;i<as-1;++i){
+                ms[target]=min(ms[target],as+i+1+racecar(target-(1<<(as-1))+(1<<i)));
+            }
+        }
+        return ms[target];
+    }
+};
