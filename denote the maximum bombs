@@ -1,0 +1,49 @@
+class Solution {
+public:
+    int bfs(vector<vector<int>>&bombs,int source){
+        int n=bombs.size();
+        vector<bool>vis(n,false);
+        queue<int>q; 
+        
+        q.push(source); 
+        vis[source]=true;
+        int count=1; 
+
+        while(!q.empty()){
+            int currentBombIndex = q.front();
+            q.pop();
+
+            long long int current_x = bombs[currentBombIndex][0];
+            long long int current_y = bombs[currentBombIndex][1];
+            long long int current_r = bombs[currentBombIndex][2];
+
+            for(int i=0;i<n;i++){
+                if(!vis[i]){
+                    long long int target_x = bombs[i][0];
+                    long long int target_y = bombs[i][1];
+                    
+                    long long int dx = current_x - target_x;
+                    long long int dy = current_y - target_y;
+                    if (dx * dx + dy * dy <= current_r * current_r) {
+                        count++;
+                        vis[i]=true;
+                        q.push(i); 
+                    }
+                }
+            }
+        }
+        return count ;
+    }
+
+    int maximumDetonation(vector<vector<int>>& bombs) {
+        int n=bombs.size();
+        int maxi=0;
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+
+        for(int i=0;i<n;i++){
+            maxi=max(maxi,bfs(bombs,i));
+        } 
+        return maxi;     
+    }
+};
