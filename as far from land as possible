@@ -1,0 +1,65 @@
+#include <vector>
+#include <queue>
+#include <algorithm> 
+
+class Solution {
+    std::vector<int> dr = {0, 0, 1, -1};
+    std::vector<int> dc = {1, -1, 0, 0};
+
+public:
+    
+    bool isPoss(int r, int c, int n) {
+        return (r >= 0 && c >= 0 && r < n && c < n);
+    }
+
+    int maxDistance(std::vector<std::vector<int>>& grid) {
+        int n = grid.size();
+        
+        std::vector<std::vector<int>> dist(n, std::vector<int>(n, -1));
+        
+        std::queue<std::pair<int, int>> pq; 
+        int land_count = 0;
+        int water_count = 0; 
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    dist[i][j] = 0;   
+                    pq.push({i, j});  
+                    land_count++;
+                } else {
+                    water_count++;
+                }
+            }
+        }
+
+        if (land_count == 0 || water_count == 0) {
+            return -1;
+        }
+
+        int ans = -1; 
+
+        while (!pq.empty()) {
+            std::pair<int, int> current_cell = pq.front(); 
+            pq.pop();
+
+            int r = current_cell.first;
+            int c = current_cell.second;
+
+            if (grid[r][c] == 0) {
+                ans = std::max(ans, dist[r][c]);
+            }
+
+            for (int i = 0; i < 4; i++) {
+                int nr = r + dr[i];
+                int nc = c + dc[i];
+
+                if (isPoss(nr, nc, n) && dist[nr][nc] == -1) {
+                    dist[nr][nc] = dist[r][c] + 1; 
+                    pq.push({nr, nc});             
+                }
+            }
+        }
+
+        return ans;
+    }
+};
